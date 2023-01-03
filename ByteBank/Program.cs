@@ -17,7 +17,7 @@ namespace ByteBank
             Console.WriteLine("1 - Criar conta");
             Console.WriteLine("2 - Excluir conta");
             Console.WriteLine("3 - Listar todas as contas cadastradas");
-            Console.WriteLine("4 - Detalhar dados do usuário");
+            Console.WriteLine("4 - Detalhar conta do usuário");
             Console.WriteLine("5 - Mostrar quantia armazenada no banco");
             Console.WriteLine("6 - Manipular conta");
             Console.WriteLine("0 - Sair do programa");
@@ -27,10 +27,12 @@ namespace ByteBank
         }
 
 
-        static void CriarConta(List<string> cpfs, List<string> titulares, List<string> senhas, List<double> saldos)
+        static void CriarConta(List<string> numerosConta, List<string> cpfs, List<string> titulares, List<string> senhas, List<double> saldos)
         {
 
             Console.Clear();
+
+            Console.WriteLine("Para criar uma conta, informe os dados abaixo:\n");
 
             Console.Write("Digite seu cpf: ");
             string cpfUsuario = Console.ReadLine();
@@ -42,7 +44,7 @@ namespace ByteBank
 
                 cpfs.Add(cpfUsuario);
 
-                Console.Write("Digite seu nome: ");
+                Console.Write("Digite seu nome completo: ");
                 titulares.Add(Console.ReadLine());
 
                 Console.Write("Digite uma senha forte: ");
@@ -50,8 +52,13 @@ namespace ByteBank
 
                 saldos.Add(0);
 
+                Random numeroRandomico = new Random();
+                string numeroConta = numeroRandomico.Next(10000000, 99999999).ToString();
+                numerosConta.Add(numeroConta);
+
                 Console.Clear();
-                Console.WriteLine("Conta criada com sucesso!");
+                Console.WriteLine("Conta criada com sucesso!\n");
+                Console.WriteLine($"O número da sua conta é {numeroConta}");
                 Console.WriteLine("----------------------------------\n");
 
             }
@@ -67,20 +74,21 @@ namespace ByteBank
         }
 
 
-        static void ExcluirConta(List<string> cpfs, List<string> titulares, List<string> senhas, List<double> saldos)
+        static void ExcluirConta(List<string> numerosConta, List<string> titulares, List<string> senhas, List<double> saldos)
         {
 
             Console.Clear();
-            Console.Write("Digite seu cpf: ");
+            Console.WriteLine("Para excluir sua conta, informe os dados abaixo:\n");
+            Console.Write("Digite o número da sua conta: ");
 
-            string cpfParaDeletar = Console.ReadLine();
-            int indexParaDeletar = cpfs.FindIndex(cpf => cpf == cpfParaDeletar);
+            string nroContaParaExcluir = Console.ReadLine();
+            int indiceParaExcluir = numerosConta.FindIndex(nroConta => nroConta == nroContaParaExcluir);
 
-            if (indexParaDeletar == -1)
+            if (indiceParaExcluir == -1)
             {
 
                 Console.Clear();
-                Console.WriteLine("Usuário não cadastrado!");
+                Console.WriteLine("A conta informada não está cadastrada no banco!");
                 Console.WriteLine("----------------------------------\n");
 
             }
@@ -90,13 +98,14 @@ namespace ByteBank
                 Console.Write("Digite sua senha: ");
                 string senhaInformada = Console.ReadLine();
 
-                if (senhas[indexParaDeletar] == senhaInformada)
+                if (senhas[indiceParaExcluir] == senhaInformada)
                 {
 
-                    cpfs.Remove(cpfParaDeletar);
-                    titulares.RemoveAt(indexParaDeletar);
-                    senhas.RemoveAt(indexParaDeletar);
-                    saldos.RemoveAt(indexParaDeletar);
+                    numerosConta.Remove(nroContaParaExcluir);
+                    titulares.RemoveAt(indiceParaExcluir);
+                    senhas.RemoveAt(indiceParaExcluir);
+                    saldos.RemoveAt(indiceParaExcluir);
+
                     Console.Clear();
                     Console.WriteLine("Conta excluída com sucesso!");
                     Console.WriteLine("----------------------------------\n");
@@ -106,7 +115,7 @@ namespace ByteBank
                 {
 
                     Console.Clear();
-                    Console.WriteLine("Senha incorreta! Nenhuma conta foi excluída.");
+                    Console.WriteLine("Senha incorreta! Sua conta não foi excluída.");
                     Console.WriteLine("----------------------------------\n");
 
                 }
@@ -116,45 +125,53 @@ namespace ByteBank
         }
 
 
-        static void ListarTodasContas(List<string> cpfs, List<string> titulares, List<double> saldos)
+        static void ListarTodasContas(List<string> numerosConta, List<string> cpfs, List<string> titulares, List<double> saldos)
         {
 
             Console.Clear();
 
-            if (cpfs.Count != 0)
+            if (numerosConta.Count != 0)
             {
 
-                for (int i = 0; i < cpfs.Count; i++)
+                Console.WriteLine("Listagem de todas as contas:\n");
+
+                for (int i = 0; i < numerosConta.Count; i++)
                 {
 
-                    MostrarContaUsuario(i, cpfs, titulares, saldos);
+                    MostrarContaUsuario(i, numerosConta, cpfs, titulares, saldos);
 
                 }
+
+                Console.WriteLine("----------------------------------\n");
 
             }
             else
             {
 
                 Console.WriteLine("Nenhuma conta cadastrada!");
+                Console.WriteLine("----------------------------------\n");
 
             }
 
         }
 
 
-        static void DetalharUsuario(List<string> cpfs, List<string> titulares, List<double> saldos)
+        static void DetalharConta(List<string> numerosConta, List<string> cpfs, List<string> titulares, List<double> saldos)
         {
 
-            Console.Write("Digite seu cpf: ");
+            Console.Clear();
+            Console.WriteLine("Para detalhar uma conta, informe os dados abaixo:\n");
 
-            string cpfParaApresentar = Console.ReadLine();
-            int indexParaApresentar = cpfs.FindIndex(cpf => cpf == cpfParaApresentar);
+            Console.Write("Digite o número da conta: ");
 
-            if (indexParaApresentar == -1)
+            string nroContaParaApresentar = Console.ReadLine();
+            int indiceParaApresentar = numerosConta.FindIndex(nroConta => nroConta == nroContaParaApresentar);
+
+            if (indiceParaApresentar == -1)
             {
 
                 Console.Clear();
-                Console.WriteLine("Não foi possível detalhar dados do usuario!");
+                Console.WriteLine("A conta informada não está cadastrada no banco!");
                 Console.WriteLine("----------------------------------\n");
 
             }
@@ -162,7 +179,10 @@ namespace ByteBank
             {
 
                 Console.Clear();
-                MostrarContaUsuario(indexParaApresentar, cpfs, titulares, saldos);
+                Console.WriteLine("Detalhes da conta:\n");
+
+                MostrarContaUsuario(indiceParaApresentar, numerosConta, cpfs, titulares, saldos);
+                Console.WriteLine("----------------------------------\n");
 
             }
 
@@ -179,11 +199,10 @@ namespace ByteBank
         }
 
 
-        static void MostrarContaUsuario(int indice, List<string> cpfs, List<string> titulares, List<double> saldos)
+        static void MostrarContaUsuario(int indice, List<string> numerosConta, List<string> cpfs, List<string> titulares, List<double> saldos)
         {
 
-            Console.WriteLine($"CPF = {cpfs[indice]} | Titular = {titulares[indice]} | Saldo = R${saldos[indice]:F2}");
-            Console.WriteLine("----------------------------------\n");
+            Console.WriteLine($"Número da conta = {numerosConta[indice]} | CPF = {cpfs[indice]} | Titular = {titulares[indice]} | Saldo = R${saldos[indice]:F2}");
 
         }
 
@@ -192,6 +211,8 @@ namespace ByteBank
         {
 
             Console.Clear();
+            Console.WriteLine("Menu principal > Manipular conta > Depositar\n");
+
             Console.Write("Digite o valor para depósito: ");
             double valorDeposito = double.Parse(Console.ReadLine());
 
@@ -208,6 +229,8 @@ namespace ByteBank
         {
 
             Console.Clear();
+            Console.WriteLine("Menu principal > Manipular conta > Ver saldo\n");
+
             Console.WriteLine($"Seu saldo é R${saldos[indiceLogin]}");
             Console.WriteLine("----------------------------------\n");
 
@@ -217,8 +240,28 @@ namespace ByteBank
         static void Sacar(List<double> saldos, int indiceLogin)
         {
 
-            Console.Write("Digite o valor para saque: ");
-            double valorParaSaque = double.Parse(Console.ReadLine());
+            double valorParaSaque;
+
+            while (true)
+            {
+
+                try
+                {
+
+                    Console.Clear();
+                    Console.WriteLine("Menu principal > Manipular conta > Sacar\n");
+
+                    Console.WriteLine($"Seu saldo é R${saldos[indiceLogin]}\n");
+
+                    Console.Write("Digite o valor para saque: ");
+                    valorParaSaque = double.Parse(Console.ReadLine());
+
+                    if(valorParaSaque > 0) break;
+
+                }
+                catch { }
+
+            }
 
             if(saldos[indiceLogin] >= valorParaSaque)
             {
@@ -241,20 +284,24 @@ namespace ByteBank
         }
 
 
-        static void Transferir(List<double> saldos, int indiceLogin, List<string> cpfs)
+        static void Transferir(List<string> numerosConta, List<double> saldos, int indiceLogin)
         {
 
             if (saldos[indiceLogin] != 0)
             {
 
-                Console.Write("Digite o CPF do titular da conta de destino: ");
-                string cpfContaDestino = Console.ReadLine();
-                string cpfUsuario = cpfs[indiceLogin];
+                string numeroConta = numerosConta[indiceLogin];
 
-                if(cpfUsuario != cpfContaDestino)
+                Console.Clear();
+                Console.WriteLine("Menu principal > Manipular conta > Transferir\n");
+
+                Console.Write("Digite o número da conta de destino: ");
+                string numeroContaDestino = Console.ReadLine();
+
+                if(numeroConta != numeroContaDestino)
                 {
 
-                    int indiceContaDestino = cpfs.FindIndex(cpf => cpf == cpfContaDestino);
+                    int indiceContaDestino = numerosConta.FindIndex(nroConta => nroConta == numeroContaDestino);
 
                     if(indiceContaDestino != -1)
                     {
@@ -280,7 +327,7 @@ namespace ByteBank
                         {
 
                             Console.Clear();
-                            Console.WriteLine($"Não foi possível transferir o valor informado! Seu saldo é R${saldos[indiceLogin]}");
+                            Console.WriteLine($"Não foi possível transferir o valor informado porque saldo é R${saldos[indiceLogin]}");
                             Console.WriteLine("----------------------------------\n");
 
                         }
@@ -290,7 +337,7 @@ namespace ByteBank
                     {
 
                         Console.Clear();
-                        Console.WriteLine("O usuário da conta de destino não está cadastrado no banco!");
+                        Console.WriteLine("O usuário da conta de destino não possui cadastro no banco!");
                         Console.WriteLine("----------------------------------\n");
 
                     }
@@ -318,22 +365,22 @@ namespace ByteBank
         }
 
 
-        static int MenuManipularConta(List<double> saldos, List<string> cpfs, List<string> senhas, List<string> titulares)
+        static int MenuManipularConta(List<string> numerosConta, List<double> saldos, List<string> cpfs, List<string> senhas, List<string> titulares)
         {
 
             Console.Clear();
-            Console.WriteLine("Bem-vindo(a) ao ByteBank!\n");
-            Console.WriteLine("Login\n");
+            Console.WriteLine("ByteBank\n");
+            Console.WriteLine("Para fazer login, informe os dados abaixo:\n");
 
-            Console.Write("Digite seu CPF: ");
-            string cpfUsuario = Console.ReadLine();
+            Console.Write("Digite o número da sua conta: ");
+            string numeroConta = Console.ReadLine();
 
-            int indiceLogin = cpfs.FindIndex(cpf => cpf == cpfUsuario);
+            int indiceLogin = numerosConta.FindIndex(nroConta => nroConta == numeroConta);
 
             if(indiceLogin != -1)
             {
 
-                Console.Write("Informe sua senha: ");
+                Console.Write("Digite sua senha: ");
                 string senhaUsuario = Console.ReadLine();
 
                 if (senhas[indiceLogin] != senhaUsuario)
@@ -350,14 +397,14 @@ namespace ByteBank
             {
 
                 Console.Clear();
-                Console.WriteLine("Usuário não cadastrado!");
+                Console.WriteLine("A conta informada não está cadastrada no banco!");
                 return 0;
 
             }
 
             Console.Clear();
-            Console.WriteLine($"Bem-vindo(a), {titulares[indiceLogin]}\n");
             Console.WriteLine("Menu principal > Manipular conta\n");
+            Console.WriteLine($"Bem-vindo(a), {titulares[indiceLogin]}\n");
 
             int opcao;
 
@@ -393,7 +440,7 @@ namespace ByteBank
                         Sacar(saldos, indiceLogin);
                         break;
                     case 3:
-                        Transferir(saldos, indiceLogin, cpfs);
+                        Transferir(numerosConta, saldos, indiceLogin);
                         break;
                     case 4:
                         VerSaldo(saldos, indiceLogin);
@@ -413,6 +460,7 @@ namespace ByteBank
         public static void Main(string[] args)
         {
 
+            List<string> numerosConta = new List<string>();
             List<string> cpfs = new List<string>();
             List<string> titulares = new List<string>();
             List<string> senhas = new List<string>();
@@ -446,22 +494,22 @@ namespace ByteBank
                         Console.WriteLine("Você saiu!");
                         break;
                     case 1:
-                        CriarConta(cpfs, titulares, senhas, saldos);
+                        CriarConta(numerosConta, cpfs, titulares, senhas, saldos);
                         break;
                     case 2:
-                        ExcluirConta(cpfs, titulares, senhas, saldos);
+                        ExcluirConta(numerosConta, titulares, senhas, saldos);
                         break;
                     case 3:
-                        ListarTodasContas(cpfs, titulares, saldos);
+                        ListarTodasContas(numerosConta, cpfs, titulares, saldos);
                         break;
                     case 4:
-                        DetalharUsuario(cpfs, titulares, saldos);
+                        DetalharConta(numerosConta, cpfs, titulares, saldos);
                         break;
                     case 5:
                         MostrarQuantiaArmazenada(saldos);
                         break;
                     case 6:
-                        opcao = MenuManipularConta(saldos, cpfs, senhas, titulares);
+                        opcao = MenuManipularConta(numerosConta, saldos, cpfs, senhas, titulares);
                         break;
                     default:
                         Console.Clear();
