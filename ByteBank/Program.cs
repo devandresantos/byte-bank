@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
+using System.Text.RegularExpressions;
 
 namespace ByteBank
 {
 
     public class Program
     {
+
 
         static void MostrarMenu()
         {
@@ -27,16 +30,110 @@ namespace ByteBank
         }
 
 
+        static string NomeValido()
+        {
+
+            while (true)
+            {
+
+                Console.Write("Digite seu nome completo: ");
+                string nomeCompleto = Console.ReadLine();
+
+                Regex re = new Regex(@"^[a-záàâãéèêíïóôõöúç ]+$");
+                Match m = re.Match(nomeCompleto);
+
+                if (m.Success) return nomeCompleto;                
+
+            }           
+
+        }
+
+
+        static string SenhaValida(string mensagem)
+        {
+
+            while (true)
+            {
+
+                Console.Write(mensagem);
+                string senha = Console.ReadLine();
+
+                if (senha.Length >= 8) return senha;                
+
+            }
+
+        }
+
+
+        static string CPFValido(string mensagem)
+        {
+
+            while (true)
+            {
+
+                Console.Clear();
+
+                if (mensagem != "") Console.WriteLine(mensagem);
+
+                Console.Write("Digite seu cpf: ");
+                string cpf = Console.ReadLine();
+
+                Regex re = new Regex(@"^[0-9]+$");
+                Match m = re.Match(cpf);
+
+                if (m.Success) return cpf;
+
+            }
+
+        }
+
+
+        static string NumeroContaValido(string mensagem)
+        {
+
+            while (true)
+            {
+
+                Console.Write(mensagem);
+                string nroConta = Console.ReadLine();
+
+                Regex re = new Regex(@"^[0-9]+$");
+                Match m = re.Match(nroConta);
+
+                if (m.Success) return nroConta;
+
+            }
+
+        }
+
+
+        static double ValorValido(string mensagem)
+        {
+
+            while (true)
+            {
+
+                try
+                {
+
+                    Console.Write(mensagem);
+                    double valorValido = double.Parse(Console.ReadLine());
+
+                    if (valorValido > 0) return valorValido;
+
+                }
+                catch { }
+
+            }
+
+        }
+
+
         static void CriarConta(List<string> numerosConta, List<string> cpfs, List<string> titulares, List<string> senhas, List<double> saldos)
         {
 
-            Console.Clear();
-
-            Console.WriteLine("Para criar uma conta, informe os dados abaixo:\n");
-
-            Console.Write("Digite seu cpf: ");
-            string cpfUsuario = Console.ReadLine();
-
+            string cpfUsuario = CPFValido("Para criar sua conta, informe os dados abaixo:\n");
+ 
             int indiceCpf = cpfs.FindIndex(cpf => cpf == cpfUsuario);
 
             if(indiceCpf == -1)
@@ -44,11 +141,13 @@ namespace ByteBank
 
                 cpfs.Add(cpfUsuario);
 
-                Console.Write("Digite seu nome completo: ");
-                titulares.Add(Console.ReadLine());
+                string nomeCompleto = NomeValido();
 
-                Console.Write("Digite uma senha forte: ");
-                senhas.Add(Console.ReadLine());
+                titulares.Add(nomeCompleto);
+
+                string senha = SenhaValida("Digite uma senha com, no mínimo, oito caracteres: ");
+
+                senhas.Add(senha);
 
                 saldos.Add(0);
 
@@ -79,9 +178,9 @@ namespace ByteBank
 
             Console.Clear();
             Console.WriteLine("Para excluir sua conta, informe os dados abaixo:\n");
-            Console.Write("Digite o número da sua conta: ");
 
-            string nroContaParaExcluir = Console.ReadLine();
+            string nroContaParaExcluir = NumeroContaValido("Digite o número da sua conta: ");
+
             int indiceParaExcluir = numerosConta.FindIndex(nroConta => nroConta == nroContaParaExcluir);
 
             if (indiceParaExcluir == -1)
@@ -162,9 +261,7 @@ namespace ByteBank
             Console.Clear();
             Console.WriteLine("Para detalhar uma conta, informe os dados abaixo:\n");
 
-            Console.Write("Digite o número da conta: ");
-
-            string nroContaParaApresentar = Console.ReadLine();
+            string nroContaParaApresentar = NumeroContaValido("Digite o número da conta: ");
             int indiceParaApresentar = numerosConta.FindIndex(nroConta => nroConta == nroContaParaApresentar);
 
             if (indiceParaApresentar == -1)
@@ -213,8 +310,7 @@ namespace ByteBank
             Console.Clear();
             Console.WriteLine("Menu principal > Manipular conta > Depositar\n");
 
-            Console.Write("Digite o valor para depósito: ");
-            double valorDeposito = double.Parse(Console.ReadLine());
+            double valorDeposito = ValorValido("Digite o valor para depósito: ");
 
             saldos[indiceLogin] += valorDeposito;
 
@@ -240,28 +336,13 @@ namespace ByteBank
         static void Sacar(List<double> saldos, int indiceLogin)
         {
 
-            double valorParaSaque;
+            Console.Clear();
+            Console.WriteLine("Menu principal > Manipular conta > Sacar\n");
 
-            while (true)
-            {
+            Console.WriteLine($"Seu saldo é R${saldos[indiceLogin]}\n");
 
-                try
-                {
+            double valorParaSaque = ValorValido("Digite o valor para saque: ");
 
-                    Console.Clear();
-                    Console.WriteLine("Menu principal > Manipular conta > Sacar\n");
-
-                    Console.WriteLine($"Seu saldo é R${saldos[indiceLogin]}\n");
-
-                    Console.Write("Digite o valor para saque: ");
-                    valorParaSaque = double.Parse(Console.ReadLine());
-
-                    if(valorParaSaque > 0) break;
-
-                }
-                catch { }
-
-            }
 
             if(saldos[indiceLogin] >= valorParaSaque)
             {
@@ -295,10 +376,9 @@ namespace ByteBank
                 Console.Clear();
                 Console.WriteLine("Menu principal > Manipular conta > Transferir\n");
 
-                Console.Write("Digite o número da conta de destino: ");
-                string numeroContaDestino = Console.ReadLine();
+                string numeroContaDestino = NumeroContaValido("Digite o número da conta de destino: ");
 
-                if(numeroConta != numeroContaDestino)
+                if (numeroConta != numeroContaDestino)
                 {
 
                     int indiceContaDestino = numerosConta.FindIndex(nroConta => nroConta == numeroContaDestino);
@@ -309,10 +389,9 @@ namespace ByteBank
                         Console.Clear();
                         Console.WriteLine($"Seu saldo é R${saldos[indiceLogin]}\n");
 
-                        Console.Write("Digite o valor da transferência: ");
-                        double valorTransferencia = double.Parse(Console.ReadLine());
+                        double valorTransferencia = ValorValido("Digite o valor da transferência: ");
 
-                        if(saldos[indiceLogin] >= valorTransferencia)
+                        if (saldos[indiceLogin] >= valorTransferencia)
                         {
 
                             saldos[indiceContaDestino] += valorTransferencia;
@@ -372,16 +451,14 @@ namespace ByteBank
             Console.WriteLine("ByteBank\n");
             Console.WriteLine("Para fazer login, informe os dados abaixo:\n");
 
-            Console.Write("Digite o número da sua conta: ");
-            string numeroConta = Console.ReadLine();
+            string numeroConta = NumeroContaValido("Digite o número da sua conta: ");
 
             int indiceLogin = numerosConta.FindIndex(nroConta => nroConta == numeroConta);
 
             if(indiceLogin != -1)
             {
 
-                Console.Write("Digite sua senha: ");
-                string senhaUsuario = Console.ReadLine();
+                string senhaUsuario = SenhaValida("Digite sua senha: ");
 
                 if (senhas[indiceLogin] != senhaUsuario)
                 {
@@ -402,14 +479,15 @@ namespace ByteBank
 
             }
 
-            Console.Clear();
-            Console.WriteLine("Menu principal > Manipular conta\n");
-            Console.WriteLine($"Bem-vindo(a), {titulares[indiceLogin]}\n");
+            int opcao = 0;
 
-            int opcao;
+            Console.Clear();
 
             do
             {
+
+                Console.WriteLine("Menu principal > Manipular conta\n");
+                Console.WriteLine($"Bem-vindo(a), {titulares[indiceLogin]}\n");
 
                 Console.WriteLine("1 - Depositar");
                 Console.WriteLine("2 - Sacar");
@@ -419,20 +497,24 @@ namespace ByteBank
                 Console.WriteLine("0 - Sair do programa");
 
                 Console.Write("\nInforme a opção desejada: ");
-                opcao = int.Parse(Console.ReadLine());
 
-                if (opcao == 0)
+                try
                 {
-
+                    opcao = int.Parse(Console.ReadLine());
+                }
+                catch
+                {
                     Console.Clear();
-                    Console.WriteLine("Você saiu!");
-                    return 0;
-
+                    continue;
                 }
 
                 switch (opcao)
                 {
 
+                    case 0:
+                        Console.Clear();
+                        Console.WriteLine("Você saiu!");
+                        return 0;
                     case 1:
                         Depositar(saldos, indiceLogin);
                         break;
@@ -445,7 +527,9 @@ namespace ByteBank
                     case 4:
                         VerSaldo(saldos, indiceLogin);
                         break;
-
+                    default:
+                        Console.Clear();
+                        continue;
                 }
 
             } while (opcao != 5);
