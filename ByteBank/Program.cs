@@ -39,7 +39,7 @@ namespace ByteBank
                 Console.Write("Digite seu nome completo: ");
                 string nomeCompleto = Console.ReadLine();
 
-                Regex re = new Regex(@"^[a-záàâãéèêíïóôõöúç ]+$");
+                Regex re = new Regex(@"^[a-záàâãéèêíóôõúçA-ZÁÀÂÃÉÈÊÍÓÔÕÚÇ ]+$");
                 Match m = re.Match(nomeCompleto);
 
                 if (m.Success) return nomeCompleto;                
@@ -58,7 +58,15 @@ namespace ByteBank
                 Console.Write(mensagem);
                 string senha = ObterSenha();
 
-                if (senha.Length >= 8) return senha;
+                Regex re = new Regex(@"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#])(?:([0-9a-zA-Z$*&@#])(?!\1)){8,}$");
+                Match m = re.Match(senha);
+
+                if(m.Success) return senha;
+
+                Console.Clear();
+                Console.WriteLine("A senha precisa ter, pelo menos:\n");
+                Console.WriteLine("Um número\nUma letra maiúscula\nUma letra minúscula\nUm dos caracteres $*&@#\nOito caracteres ao todo");
+                Console.WriteLine("----------------------------------\n");
 
             }
 
@@ -189,7 +197,7 @@ namespace ByteBank
 
                 titulares.Add(nomeCompleto);
 
-                string senha = SenhaValida("Digite uma senha com, no mínimo, oito caracteres: ");
+                string senha = SenhaValida("Digite uma senha forte: ");
 
                 senhas.Add(senha);
 
