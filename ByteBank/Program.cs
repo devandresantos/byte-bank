@@ -56,9 +56,46 @@ namespace ByteBank
             {
 
                 Console.Write(mensagem);
-                string senha = Console.ReadLine();
+                string senha = ObterSenha();
 
-                if (senha.Length >= 8) return senha;                
+                if (senha.Length >= 8) return senha;
+
+            }
+
+        }
+
+
+        static bool? VerificarSenha(string senhaSalva)
+        {
+
+            int errosSenha = 3;
+
+            while (true)
+            {
+
+                Console.WriteLine("ByteBank\n");
+                Console.WriteLine("Para fazer login, informe os dados abaixo:\n");
+                Console.Write("Digite sua senha: ");
+
+                string senha = ObterSenha();
+
+                if (senha == senhaSalva) return true;
+
+                errosSenha--;
+
+                if (errosSenha == 0)
+                {
+
+                    Console.Clear();
+                    Console.WriteLine("Para sua segurança, bloqueamos o acesso a sua conta!");
+                    Console.WriteLine("----------------------------------\n");
+                    return null;
+
+                }
+
+                Console.Clear();
+                Console.WriteLine($"A senha informada está incorreta. Você ainda tem {errosSenha} chance(s) antes do bloqueio da conta!");
+                Console.WriteLine("----------------------------------\n");
 
             }
 
@@ -102,6 +139,8 @@ namespace ByteBank
 
                 if (m.Success) return nroConta;
 
+                Console.Clear();
+
             }
 
         }
@@ -121,8 +160,13 @@ namespace ByteBank
 
                     if (valorValido > 0) return valorValido;
 
+
                 }
                 catch { }
+
+                Console.Clear();
+                Console.WriteLine("Digite pelo menos R$0,01");
+                Console.WriteLine("----------------------------------\n");
 
             }
 
@@ -151,8 +195,20 @@ namespace ByteBank
 
                 saldos.Add(0);
 
-                Random numeroRandomico = new Random();
-                string numeroConta = numeroRandomico.Next(10000000, 99999999).ToString();
+                string numeroConta;
+
+                while (true)
+                {
+
+                    Random numeroRandomico = new Random();
+                    numeroConta = numeroRandomico.Next(10000000, 99999999).ToString();
+
+                    int indiceNroConta = numerosConta.FindIndex(nro => nro == numeroConta);
+
+                    if (indiceNroConta == -1) break;
+
+                }
+
                 numerosConta.Add(numeroConta);
 
                 Console.Clear();
@@ -195,7 +251,7 @@ namespace ByteBank
             {
 
                 Console.Write("Digite sua senha: ");
-                string senhaInformada = Console.ReadLine();
+                string senhaInformada = ObterSenha();
 
                 if (senhas[indiceParaExcluir] == senhaInformada)
                 {
@@ -290,7 +346,7 @@ namespace ByteBank
         {
 
             Console.Clear();
-            Console.WriteLine($"Total da quantia armazenada no banco: R${saldos.Sum()}");
+            Console.WriteLine($"Total da quantia armazenada no banco: R${saldos.Sum():F2}");
             Console.WriteLine("----------------------------------\n");
 
         }
@@ -299,7 +355,7 @@ namespace ByteBank
         static void MostrarContaUsuario(int indice, List<string> numerosConta, List<string> cpfs, List<string> titulares, List<double> saldos)
         {
 
-            Console.WriteLine($"Número da conta = {numerosConta[indice]} | CPF = {cpfs[indice]} | Titular = {titulares[indice]} | Saldo = R${saldos[indice]:F2}");
+            Console.WriteLine($"Titular: {titulares[indice]} | Número da conta: {numerosConta[indice]} | CPF: {cpfs[indice]} | Saldo: R${saldos[indice]:F2}");
 
         }
 
@@ -308,14 +364,13 @@ namespace ByteBank
         {
 
             Console.Clear();
-            Console.WriteLine("Menu principal > Manipular conta > Depositar\n");
 
-            double valorDeposito = ValorValido("Digite o valor para depósito: ");
+            double valorDeposito = ValorValido("Menu principal > Manipular conta > Depositar\n\nDigite o valor para depósito: ");
 
             saldos[indiceLogin] += valorDeposito;
 
             Console.Clear();
-            Console.WriteLine($"Valor depositado com sucesso! Seu novo saldo é R${saldos[indiceLogin]}");
+            Console.WriteLine($"Valor depositado com sucesso! Seu novo saldo é R${saldos[indiceLogin]:F2}");
             Console.WriteLine("----------------------------------\n");
 
         }
@@ -327,7 +382,7 @@ namespace ByteBank
             Console.Clear();
             Console.WriteLine("Menu principal > Manipular conta > Ver saldo\n");
 
-            Console.WriteLine($"Seu saldo é R${saldos[indiceLogin]}");
+            Console.WriteLine($"Seu saldo é R${saldos[indiceLogin]:F2}");
             Console.WriteLine("----------------------------------\n");
 
         }
@@ -337,19 +392,15 @@ namespace ByteBank
         {
 
             Console.Clear();
-            Console.WriteLine("Menu principal > Manipular conta > Sacar\n");
 
-            Console.WriteLine($"Seu saldo é R${saldos[indiceLogin]}\n");
-
-            double valorParaSaque = ValorValido("Digite o valor para saque: ");
-
+            double valorParaSaque = ValorValido($"Menu principal > Manipular conta > Sacar\n\nSeu saldo é R${saldos[indiceLogin]:F2}\n\nDigite o valor para saque: ");
 
             if(saldos[indiceLogin] >= valorParaSaque)
             {
 
                 saldos[indiceLogin] -= valorParaSaque;
                 Console.Clear();
-                Console.WriteLine($"Saque realizado com sucesso! Seu novo saldo é R${saldos[indiceLogin]}");
+                Console.WriteLine($"Saque realizado com sucesso! Seu novo saldo é R${saldos[indiceLogin]:F2}");
                 Console.WriteLine("----------------------------------\n");
 
             }
@@ -357,7 +408,7 @@ namespace ByteBank
             {
 
                 Console.Clear();
-                Console.WriteLine($"Não foi possível sacar o valor informado. Seu saldo é R${saldos[indiceLogin]}");
+                Console.WriteLine($"Não foi possível sacar o valor informado. Seu saldo é R${saldos[indiceLogin]:F2}");
                 Console.WriteLine("----------------------------------\n");
 
             }
@@ -374,9 +425,8 @@ namespace ByteBank
                 string numeroConta = numerosConta[indiceLogin];
 
                 Console.Clear();
-                Console.WriteLine("Menu principal > Manipular conta > Transferir\n");
 
-                string numeroContaDestino = NumeroContaValido("Digite o número da conta de destino: ");
+                string numeroContaDestino = NumeroContaValido("Menu principal > Manipular conta > Transferir\n\nDigite o número da conta de destino: ");
 
                 if (numeroConta != numeroContaDestino)
                 {
@@ -387,7 +437,7 @@ namespace ByteBank
                     {
 
                         Console.Clear();
-                        Console.WriteLine($"Seu saldo é R${saldos[indiceLogin]}\n");
+                        Console.WriteLine($"Seu saldo é R${saldos[indiceLogin]:F2}\n");
 
                         double valorTransferencia = ValorValido("Digite o valor da transferência: ");
 
@@ -398,7 +448,7 @@ namespace ByteBank
                             saldos[indiceLogin] -= valorTransferencia;
 
                             Console.Clear();
-                            Console.WriteLine($"Transferência realizada com sucesso! Seu novo saldo é R${saldos[indiceLogin]}");
+                            Console.WriteLine($"Transferência realizada com sucesso! Seu novo saldo é R${saldos[indiceLogin]:F2}");
                             Console.WriteLine("----------------------------------\n");
 
                         }
@@ -406,7 +456,7 @@ namespace ByteBank
                         {
 
                             Console.Clear();
-                            Console.WriteLine($"Não foi possível transferir o valor informado porque saldo é R${saldos[indiceLogin]}");
+                            Console.WriteLine($"Não foi possível transferir o valor informado porque saldo é R${saldos[indiceLogin]:F2}");
                             Console.WriteLine("----------------------------------\n");
 
                         }
@@ -448,26 +498,19 @@ namespace ByteBank
         {
 
             Console.Clear();
-            Console.WriteLine("ByteBank\n");
-            Console.WriteLine("Para fazer login, informe os dados abaixo:\n");
-
-            string numeroConta = NumeroContaValido("Digite o número da sua conta: ");
+           
+            string numeroConta = NumeroContaValido("ByteBank\n\nPara fazer login, informe os dados abaixo:\n\nDigite o número da sua conta: ");
 
             int indiceLogin = numerosConta.FindIndex(nroConta => nroConta == numeroConta);
 
             if(indiceLogin != -1)
             {
 
-                string senhaUsuario = SenhaValida("Digite sua senha: ");
+                Console.Clear();
 
-                if (senhas[indiceLogin] != senhaUsuario)
-                {
+                bool? senhaUsuario = VerificarSenha(senhas[indiceLogin]);
 
-                    Console.Clear();
-                    Console.WriteLine("Senha incorreta!");
-                    return 0;
-
-                }
+                if (senhaUsuario == null) return 0;
 
             }
             else
@@ -475,7 +518,8 @@ namespace ByteBank
 
                 Console.Clear();
                 Console.WriteLine("A conta informada não está cadastrada no banco!");
-                return 0;
+                Console.WriteLine("----------------------------------\n");
+                return -1;
 
             }
 
@@ -500,12 +544,16 @@ namespace ByteBank
 
                 try
                 {
+
                     opcao = int.Parse(Console.ReadLine());
+
                 }
                 catch
                 {
+
                     Console.Clear();
                     continue;
+
                 }
 
                 switch (opcao)
@@ -537,6 +585,42 @@ namespace ByteBank
             Console.Clear();
 
             return -1;
+
+        }
+
+
+        static string ObterSenha()
+        {
+
+            var senha = string.Empty;
+            ConsoleKey key;
+
+            do
+            {
+
+                var infoTecla = Console.ReadKey(intercept: true);
+                key = infoTecla.Key;
+
+                if (key == ConsoleKey.Backspace && senha.Length > 0)
+                {
+
+                    Console.Write("\b \b");
+                    senha = senha[0..^1];
+
+                }
+                else if (!char.IsControl(infoTecla.KeyChar))
+                {
+
+                    Console.Write("*");
+                    senha += infoTecla.KeyChar;
+
+                }
+
+            } while (key != ConsoleKey.Enter);
+
+            Console.WriteLine();
+
+            return senha;
 
         }
 
