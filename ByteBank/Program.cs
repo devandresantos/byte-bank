@@ -42,7 +42,7 @@ namespace ByteBank
                 Regex re = new Regex(@"^[a-záàâãéèêíóôõúçA-ZÁÀÂÃÉÈÊÍÓÔÕÚÇ ]+$");
                 Match m = re.Match(nomeCompleto);
 
-                if (m.Success) return nomeCompleto;                
+                if (m.Success && nomeCompleto.Length > 3) return nomeCompleto;                
 
             }           
 
@@ -126,7 +126,7 @@ namespace ByteBank
                 Regex re = new Regex(@"^[0-9]+$");
                 Match m = re.Match(cpf);
 
-                if (m.Success) return cpf;
+                if (m.Success && cpf.Length == 11) return cpf;
 
             }
 
@@ -145,7 +145,7 @@ namespace ByteBank
                 Regex re = new Regex(@"^[0-9]+$");
                 Match m = re.Match(nroConta);
 
-                if (m.Success) return nroConta;
+                if (m.Success && nroConta.Length == 8) return nroConta;
 
                 Console.Clear();
 
